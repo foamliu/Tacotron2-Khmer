@@ -137,7 +137,7 @@ if __name__ == '__main__':
 
     text, mel = train_dataset[0]
     print('text: ' + str(text))
-    text = sequence_to_text(text.numpy().tolist(), char2idx)
+    text = sequence_to_text(text.numpy().tolist(), idx2char)
     text = ''.join(text)
     print('text: ' + str(text))
     print('type(mel): ' + str(type(mel)))
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
     for data in tqdm(dev_dataset):
         text, mel = data
-        text = sequence_to_text(text.numpy().tolist(), char2idx)
+        text = sequence_to_text(text.numpy().tolist(), idx2char)
         text = ''.join(text)
         mel = mel.numpy()
 
