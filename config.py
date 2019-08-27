@@ -8,20 +8,15 @@ num_train = 120098
 num_dev = 14326
 num_test = 7176
 vocab_size = 33
-
-letters = '@abcdefghijklmnopqrstuvwxyz12345 '
-idx_to_char = {i: letters[i] for i in range(0, len(letters))}
-char_to_idx = {letters[i]: i for i in range(0, len(letters))}
+vacab_file = 'data/vacab.pkl'
 
 unk_id = 0
 
 DATA_DIR = 'data'
-aishell_folder = 'data/data_aishell'
-wav_folder = os.path.join(aishell_folder, 'wav')
-tran_file = os.path.join(aishell_folder, 'transcript/aishell_transcript_v0.8.txt')
-data_file = 'data/aishell.pkl'
-speaker_info = 'data/speaker.info'
-
+data_folder = 'data/km_kh_male'
+wav_folder = os.path.join(data_folder, 'wavs')
+tran_file = os.path.join(data_folder, 'line_index.tsv')
+data_file = 'data/km_kh_male.pkl'
 
 ################################
 # Experiment Parameters        #

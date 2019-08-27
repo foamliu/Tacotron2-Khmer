@@ -1,99 +1,65 @@
-import argparse
-import os
 import pickle
+import random
 
-import pinyin
-from tqdm import tqdm
-
-from config import wav_folder, tran_file, data_file, char_to_idx, unk_id, speaker_info
+from config import tran_file, vacab_file
 from utils import ensure_folder
 
 
-def get_data(split, gender):
-    print('getting {} data...'.format(split))
-
-    speaker_dict = get_speaker_dict()
-
+def process_data():
     with open(tran_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
 
-    tran_dict = dict()
-    for line in lines:
-        tokens = line.split()
-        key = tokens[0]
-        trn = ''.join(tokens[1:])
-        tran_dict[key] = trn
-
     samples = []
+    for i, line in enumerate(lines):
+        tokens = line.split()
+        audiopath = 'data/km_kh_male/wavs/{}.wav'.format(tokens[0])
+        text = tokens[1].strip()
+        for token in text:
+            build_vocab(token)
+        samples.append('{}|{}\n'.format(audiopath, text))
 
-    folder = os.path.join(wav_folder, split)
-    ensure_folder(folder)
-    dirs = [os.path.join(folder, d) for d in os.listdir(folder) if os.path.isdir(os.path.join(folder, d))]
-    for dir in tqdm(dirs):
-        files = [f for f in os.listdir(dir) if f.endswith('.wav')]
+    valid_ids = random.sample(range(len(samples)), 100)
+    train = []
+    valid = []
+    for id in range(len(samples)):
+        sample = samples[id]
+        if id in valid_ids:
+            valid.append(sample)
+        else:
+            train.append(sample)
 
-        for f in files:
-            audiopath = os.path.join(dir, f)
-            speaker_id = audiopath.split('/')[4]
-            speaker_gender = speaker_dict[speaker_id]
+    ensure_folder('filelists')
 
-            if speaker_gender != gender:
-                continue
+    # print(samples)
+    with open('filelists/bznsyp_audio_text_train_filelist.txt', 'w', encoding='utf-8') as file:
+        file.writelines(train)
+    with open('filelists/bznsyp_audio_text_valid_filelist.txt', 'w', encoding='utf-8') as file:
+        file.writelines(valid)
 
-            key = f.split('.')[0]
-            if key in tran_dict:
-                text = tran_dict[key]
-                text = pinyin.get(text.strip(), format="numerical", delimiter=" ")
-                text = list(text)
-
-                temp = []
-                for token in text:
-                    if token in char_to_idx:
-                        temp.append(char_to_idx[token])
-                    else:
-                        temp.append(unk_id)
-
-                text = temp
-
-                samples.append({'text': text, 'audiopath': audiopath})
-
-    print('split: {}, num_files: {}'.format(split, len(samples)))
-    return samples
+    print('num_train: ' + str(len(train)))
+    print('num_valid: ' + str(len(valid)))
 
 
-def get_speaker_dict():
-    with open(speaker_info, 'r') as file:
-        lines = file.readlines()
-
-    speaker_dict = {'S' + l.strip().split(' ')[0]: l.strip().split(' ')[1] for l in lines}
-    return speaker_dict
-
-
-def parse_args():
-    parser = argparse.ArgumentParser(description='Tacotron2')
-    parser.add_argument('--gender', default='M', type=str)
-    args = parser.parse_args()
-    return args
-
-
-def main():
-    args = parse_args()
-    gender = args.gender
-
-    print('gender: ' + gender)
-
-    data = dict()
-    data['train'] = get_data('train', gender)
-    data['dev'] = get_data('dev', gender)
-    data['test'] = get_data('test', gender)
-
-    with open(data_file, 'wb') as file:
-        pickle.dump(data, file)
-
-    print('num_train: ' + str(len(data['train'])))
-    print('num_dev: ' + str(len(data['dev'])))
-    print('num_test: ' + str(len(data['test'])))
+def build_vocab(token):
+    global char2idx, idx2char
+    if not token in char2idx:
+        next_index = len(char2idx)
+        char2idx[token] = next_index
+        idx2char[next_index] = token
 
 
 if __name__ == "__main__":
-    main()
+    char2idx = {}
+    idx2char = {}
+
+    process_data()
+
+    data = dict()
+    data['char2idx'] = char2idx
+    data['idx2char'] = idx2char
+
+    with open(vacab_file, 'wb') as file:
+        pickle.dump(data, file)
+
+    print('vocab_size: ' + str(len(data['char2idx'])))
+    print('char2idx: ' + str(char2idx))

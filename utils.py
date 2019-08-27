@@ -8,7 +8,7 @@ import numpy as np
 import pinyin
 import torch
 
-from config import sampling_rate, char_to_idx, idx_to_char
+from config import sampling_rate
 
 
 def clip_gradient(optimizer, grad_clip):
@@ -162,13 +162,13 @@ def to_gpu(x):
     return torch.autograd.Variable(x)
 
 
-def text_to_sequence(text):
-    result = [char_to_idx[ch] for ch in text]
+def text_to_sequence(text, char2idx):
+    result = [char2idx[ch] for ch in text]
     return result
 
 
-def sequence_to_text(seq):
-    result = [idx_to_char[idx] for idx in seq]
+def sequence_to_text(seq, idx2char):
+    result = [idx2char[idx] for idx in seq]
     return result
 
 
