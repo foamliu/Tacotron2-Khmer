@@ -5,7 +5,6 @@ import cv2 as cv
 import librosa
 import matplotlib.pylab as plt
 import numpy as np
-import pinyin
 import torch
 
 from config import sampling_rate
@@ -182,9 +181,15 @@ def plot_data(data, figsize=(16, 4)):
 def test(model, step_num, loss):
     model.eval()
 
-    text = "必须树立公共交通优先发展的理念"
-    text = pinyin.get(text, format="numerical", delimiter=" ")
-    sequence = np.array(text_to_sequence(text))[None, :]
+    import pickle
+    from config import vocab_file
+    with open(vocab_file, 'rb') as file:
+        data = pickle.load(file)
+
+    char2idx = data['char2idx']
+
+    text = "ប្រទេសចិននិងប្រទេសកម្ពុជាគឺជាប្រទេសជិតខាងដ៏រួសរាយរាក់ទាក់។"
+    sequence = np.array(text_to_sequence(text, char2idx))[None, :]
     sequence = torch.autograd.Variable(torch.from_numpy(sequence)).cuda().long()
     with torch.no_grad():
         mel_outputs, mel_outputs_postnet, _, alignments = model.inference(sequence)
