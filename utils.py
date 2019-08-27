@@ -198,6 +198,7 @@ def test(model, step_num, loss):
                alignments.float().data.cpu().numpy()[0].T))
     title = 'step={0}, loss={1:.5f}'.format(step_num, loss)
     plt.title(title)
+    ensure_folder('images')
     filename = 'images/temp.jpg'
     plt.savefig(filename)
     img = cv.imread(filename)
