@@ -11,7 +11,7 @@ def process_data():
 
     samples = []
     for i, line in enumerate(lines):
-        tokens = line.split()
+        tokens = line.strip().split()
         audiopath = 'data/km_kh_male/wavs/{}.wav'.format(tokens[0])
         text = ''.join(tokens[1:])
         for token in text:

@@ -188,7 +188,7 @@ def test(model, step_num, loss):
 
     char2idx = data['char2idx']
 
-    text = "ប្រទេសចិននិងប្រទេសកម្ពុជាគឺជាប្រទេសជិតខាងដ៏រួសរាយរាក់ទាក់។"
+    text = "ប្រទេសចិននិងប្រទេសកម្ពុជាគឺជាប្រទេសជិតខាងដ៏រួសរាយរាក់ទាក់"
     sequence = np.array(text_to_sequence(text, char2idx))[None, :]
     sequence = torch.autograd.Variable(torch.from_numpy(sequence)).cuda().long()
     with torch.no_grad():
