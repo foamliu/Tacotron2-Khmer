@@ -4,10 +4,9 @@ import torch
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  # sets device for model and PyTorch tensors
 
-num_train = 120098
-num_dev = 14326
-num_test = 7176
-vocab_size = 33
+num_train = 2806
+num_dev = 100
+vocab_size = 70
 vocab_file = 'data/vocab.pkl'
 
 unk_id = 0
