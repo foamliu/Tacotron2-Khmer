@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import torch.utils.data
 
+from config import vocab_file
 from models import layers
 from utils import load_wav_to_torch, load_filepaths_and_text, text_to_sequence
 
@@ -118,7 +119,7 @@ if __name__ == '__main__':
     import config
     from tqdm import tqdm
     from utils import parse_args, sequence_to_text
-    from config import training_files, validation_files, vocab_file
+    from config import training_files, validation_files
 
     with open(vocab_file, 'rb') as file:
         data = pickle.load(file)
