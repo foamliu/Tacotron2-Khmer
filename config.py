@@ -32,6 +32,8 @@ distributed_run = False
 # Data Parameters             #
 ################################
 load_mel_from_disk = False
+training_files = 'filelists/km_kh_male_audio_text_train_filelist.txt'
+validation_files = 'filelists/km_kh_male_audio_text_valid_filelist.txt'
 
 ################################
 # Audio Parameters             #

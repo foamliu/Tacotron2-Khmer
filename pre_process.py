@@ -1,7 +1,7 @@
 import pickle
 import random
 
-from config import tran_file, vocab_file
+from config import tran_file, vocab_file, training_files, validation_files
 from utils import ensure_folder
 
 
@@ -31,9 +31,9 @@ def process_data():
     ensure_folder('filelists')
 
     # print(samples)
-    with open('filelists/km_kh_male_audio_text_train_filelist.txt', 'w', encoding='utf-8') as file:
+    with open(training_files, 'w', encoding='utf-8') as file:
         file.writelines(train)
-    with open('filelists/km_kh_male_audio_text_valid_filelist.txt', 'w', encoding='utf-8') as file:
+    with open(validation_files, 'w', encoding='utf-8') as file:
         file.writelines(valid)
 
     print('num_train: ' + str(len(train)))

@@ -5,9 +5,9 @@ import numpy as np
 import torch
 import torch.utils.data
 
-from config import data_file, vocab_file
+from config import vocab_file
 from models import layers
-from utils import load_wav_to_torch, text_to_sequence
+from utils import load_wav_to_torch, load_filepaths_and_text, text_to_sequence
 
 
 class TextMelLoader(torch.utils.data.Dataset):
@@ -17,18 +17,14 @@ class TextMelLoader(torch.utils.data.Dataset):
         3) computes mel-spectrograms from audio files.
     """
 
-    def __init__(self, split, hparams):
+    def __init__(self, audiopaths_and_text, hparams):
         with open(vocab_file, 'rb') as file:
             data = pickle.load(file)
 
         self.char2idx = data['char2idx']
         self.idx2char = data['idx2char']
 
-        with open(data_file, 'rb') as file:
-            data = pickle.load(file)
-
-        self.samples = data[split]
-        print('loading {} {} samples...'.format(len(self.samples), split))
+        self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
 
         self.sampling_rate = hparams.sampling_rate
         # self.max_wav_value = hparams.max_wav_value
@@ -38,12 +34,11 @@ class TextMelLoader(torch.utils.data.Dataset):
             hparams.n_mel_channels, hparams.sampling_rate, hparams.mel_fmin,
             hparams.mel_fmax)
         random.seed(1234)
-        random.shuffle(self.samples)
+        random.shuffle(self.audiopaths_and_text)
 
-    def get_mel_text_pair(self, sample):
+    def get_mel_text_pair(self, audiopath_and_text):
         # separate filename and text
-        audiopath, text = sample['audiopath'], sample['text']
-        text = text_to_sequence(text, self.char2idx)
+        audiopath, text = audiopath_and_text[0], audiopath_and_text[1]
         text = self.get_text(text)
         mel = self.get_mel(audiopath)
         return (text, mel)
@@ -62,14 +57,15 @@ class TextMelLoader(torch.utils.data.Dataset):
         return melspec
 
     def get_text(self, text):
+        text = text_to_sequence(text, self.char2idx)
         text_norm = torch.IntTensor(text)
         return text_norm
 
     def __getitem__(self, index):
-        return self.get_mel_text_pair(self.samples[index])
+        return self.get_mel_text_pair(self.audiopaths_and_text[index])
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.audiopaths_and_text)
 
 
 class TextMelCollate:
