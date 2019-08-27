@@ -5,7 +5,6 @@ import numpy as np
 import torch
 import torch.utils.data
 
-from config import vocab_file
 from models import layers
 from utils import load_wav_to_torch, load_filepaths_and_text, text_to_sequence
 
@@ -119,19 +118,26 @@ if __name__ == '__main__':
     import config
     from tqdm import tqdm
     from utils import parse_args, sequence_to_text
+    from config import training_files, validation_files, vocab_file
+
+    with open(vocab_file, 'rb') as file:
+        data = pickle.load(file)
+
+    char2idx = data['char2idx']
+    idx2char = data['idx2char']
 
     args = parse_args()
     collate_fn = TextMelCollate(config.n_frames_per_step)
 
-    train_dataset = TextMelLoader('train', config)
+    train_dataset = TextMelLoader(training_files, config)
     print('len(train_dataset): ' + str(len(train_dataset)))
 
-    dev_dataset = TextMelLoader('dev', config)
+    dev_dataset = TextMelLoader(validation_files, config)
     print('len(dev_dataset): ' + str(len(dev_dataset)))
 
     text, mel = train_dataset[0]
     print('text: ' + str(text))
-    text = sequence_to_text(text.numpy().tolist())
+    text = sequence_to_text(text.numpy().tolist(), char2idx)
     text = ''.join(text)
     print('text: ' + str(text))
     print('type(mel): ' + str(type(mel)))
@@ -141,7 +147,7 @@ if __name__ == '__main__':
 
     for data in tqdm(dev_dataset):
         text, mel = data
-        text = sequence_to_text(text.numpy().tolist())
+        text = sequence_to_text(text.numpy().tolist(), char2idx)
         text = ''.join(text)
         mel = mel.numpy()
 
