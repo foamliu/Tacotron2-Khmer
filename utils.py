@@ -84,7 +84,7 @@ def parse_args():
     parser.add_argument('--epochs', default=10000, type=int)
     parser.add_argument('--max_norm', default=1, type=float, help='Gradient norm threshold to clip')
     # minibatch
-    parser.add_argument('--batch_size', default=48, type=int)
+    parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--num-workers', default=4, type=int, help='Number of workers to generate minibatch')
     # logging
     parser.add_argument('--print_freq', default=10, type=int, help='Frequency of printing training information')
@@ -143,7 +143,7 @@ def normalize(yt):
 def load_wav_to_torch(full_path):
     # sampling_rate, data = read(full_path)
     y, sr = librosa.load(full_path, sampling_rate)
-    yt, _ = librosa.effects.trim(y, top_db=20)
+    yt, _ = librosa.effects.trim(y, top_db=60)
     yt = normalize(yt)
     return torch.FloatTensor(yt.astype(np.float32)), sr
 

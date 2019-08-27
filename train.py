@@ -51,10 +51,10 @@ def train_net(args):
     collate_fn = TextMelCollate(config.n_frames_per_step)
 
     # Custom dataloaders
-    train_dataset = TextMelLoader('train', config)
+    train_dataset = TextMelLoader(config.training_files, config)
     train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, collate_fn=collate_fn,
                                                shuffle=True, num_workers=args.num_workers)
-    valid_dataset = TextMelLoader('dev', config)
+    valid_dataset = TextMelLoader(config.validation_files, config)
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=args.batch_size, collate_fn=collate_fn,
                                                shuffle=False, num_workers=args.num_workers)
 
