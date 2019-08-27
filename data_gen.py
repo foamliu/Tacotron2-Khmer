@@ -5,9 +5,9 @@ import numpy as np
 import torch
 import torch.utils.data
 
-from config import data_file
+from config import data_file, vocab_file
 from models import layers
-from utils import load_wav_to_torch
+from utils import load_wav_to_torch, text_to_sequence
 
 
 class TextMelLoader(torch.utils.data.Dataset):
@@ -18,6 +18,12 @@ class TextMelLoader(torch.utils.data.Dataset):
     """
 
     def __init__(self, split, hparams):
+        with open(vocab_file, 'rb') as file:
+            data = pickle.load(file)
+
+        self.char2idx = data['char2idx']
+        self.idx2char = data['idx2char']
+
         with open(data_file, 'rb') as file:
             data = pickle.load(file)
 
@@ -37,6 +43,7 @@ class TextMelLoader(torch.utils.data.Dataset):
     def get_mel_text_pair(self, sample):
         # separate filename and text
         audiopath, text = sample['audiopath'], sample['text']
+        text = text_to_sequence(text, self.char2idx)
         text = self.get_text(text)
         mel = self.get_mel(audiopath)
         return (text, mel)

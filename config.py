@@ -8,7 +8,7 @@ num_train = 120098
 num_dev = 14326
 num_test = 7176
 vocab_size = 33
-vacab_file = 'data/vacab.pkl'
+vocab_file = 'data/vocab.pkl'
 
 unk_id = 0
 

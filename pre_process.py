@@ -1,7 +1,7 @@
 import pickle
 import random
 
-from config import tran_file, vacab_file
+from config import tran_file, vocab_file
 from utils import ensure_folder
 
 
@@ -13,7 +13,7 @@ def process_data():
     for i, line in enumerate(lines):
         tokens = line.split()
         audiopath = 'data/km_kh_male/wavs/{}.wav'.format(tokens[0])
-        text = tokens[1].strip()
+        text = ''.join(tokens[1:])
         for token in text:
             build_vocab(token)
         samples.append('{}|{}\n'.format(audiopath, text))
@@ -31,9 +31,9 @@ def process_data():
     ensure_folder('filelists')
 
     # print(samples)
-    with open('filelists/bznsyp_audio_text_train_filelist.txt', 'w', encoding='utf-8') as file:
+    with open('filelists/km_kh_male_audio_text_train_filelist.txt', 'w', encoding='utf-8') as file:
         file.writelines(train)
-    with open('filelists/bznsyp_audio_text_valid_filelist.txt', 'w', encoding='utf-8') as file:
+    with open('filelists/km_kh_male_audio_text_valid_filelist.txt', 'w', encoding='utf-8') as file:
         file.writelines(valid)
 
     print('num_train: ' + str(len(train)))
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     data['char2idx'] = char2idx
     data['idx2char'] = idx2char
 
-    with open(vacab_file, 'wb') as file:
+    with open(vocab_file, 'wb') as file:
         pickle.dump(data, file)
 
     print('vocab_size: ' + str(len(data['char2idx'])))
